@@ -7,4 +7,4 @@ def index():
 
 @app.route('/about')
 def about():
-    return "About works!!"
+    return render_template('public/about.html')
