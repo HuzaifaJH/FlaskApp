@@ -1,0 +1,20 @@
+Flask Guide
+# https://pythonise.com/series/learning-flask/your-first-flask-app
+python -m venv env #create a virtual environment
+env\Scripts\activate #activate the env
+set FLASK_APP=app.py #set as flask environment variable
+set FLASK_ENV=development #set as flask environment variable
+flask run #run app
+nul > admin_views.py #create new file from cmd
+pip freeze > requirements.txt #lists all of the packages we've installed
+
+# Git Guide
+git init
+git config --global user.name "Huzaifa"
+git config --global user.email "huzaifajuzer@Hotmail.com"
+git add .
+git commit -m "some message"
+git remote add origin <repo link>
+git branch -M main
+git push origin main
+
