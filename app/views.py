@@ -1,5 +1,11 @@
+import os
 from app import app
 from flask import render_template, request, redirect, jsonify, make_response
+from werkzeug.utils import secure_filename
+
+app.config["VIDEO_UPLOADS"] = "D:/HJ/RA work/app/app/static/img"
+app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF", "MP4"]
+app.config['MAX_FILESIZE'] = 50 * 1024 * 1024
 
 users = {
     "mitsuhiko": {
@@ -88,3 +94,60 @@ def json_example():
     else:
 
         return make_response(jsonify({"message": "Request body must be JSON"}), 400)
+
+@app.route("/upload-video", methods=["GET", "POST"])
+def upload_video():
+    if request.method == "POST":
+
+        if request.files:
+
+            if "filesize" in request.cookies:
+
+                if not allowed_image_filesize(request.cookies["filesize"]):
+                    print("Filesize exceeded maximum limit")
+                    return redirect(request.url)
+
+                image = request.files["image"]
+
+                if image.filename == "":
+                    print("No filename")
+                    return redirect(request.url)
+
+                if allowed_image(image.filename):
+                    filename = secure_filename(image.filename)
+
+                    image.save(os.path.join(app.config["VIDEO_UPLOADS"], filename))
+
+                    print("Image saved")
+
+                    return redirect(request.url)
+
+                else:
+                    print("That file extension is not allowed")
+                    return redirect(request.url)
+
+
+    return render_template('public/upload_video.html')
+
+def allowed_image(filename):
+
+    # We only want files with a . in the filename
+    if not "." in filename:
+        return False
+
+    # Split the extension from the filename
+    ext = filename.rsplit(".", 1)[1]
+
+    # Check if the extension is in ALLOWED_IMAGE_EXTENSIONS
+    if ext.upper() in app.config["ALLOWED_IMAGE_EXTENSIONS"]:
+        return True
+    else:
+        return False
+    
+def allowed_image_filesize(filesize):
+
+    if int(filesize) <= app.config["MAX_FILESIZE"]:
+        return True
+    else:
+        return False
+
